@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D&D Character Forge</title>
+    <meta name="description" content="Create fully customized Dungeons & Dragons characters with a guided builder that supports official and custom options.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles/style.css">
+</head>
+<body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div class="page">
+        <header class="app-header">
+            <div>
+                <h1>D&D Character Forge</h1>
+                <p>Build heroes with confidence using curated rules content, custom options, and step-by-step guidance.</p>
+            </div>
+            <button id="restart-builder" class="ghost-button" type="button" title="Reset the builder to start from scratch">
+                Start Over
+            </button>
+        </header>
+        <main class="app-main">
+            <aside class="stepper" aria-label="Builder progress"></aside>
+            <section id="app" class="app-shell" aria-live="polite"></section>
+        </main>
+        <footer class="app-footer">
+            <p>Built for quick deployment on GitHub Pages. Live-syncs with the free 5e SRD API for official content.</p>
+            <p class="footer-links">
+                <a href="https://www.dnd5eapi.co/" target="_blank" rel="noopener">5e SRD API</a>
+                <span>•</span>
+                <a href="https://github.com/yourusername/DnD_maker" target="_blank" rel="noopener">Project Repository</a>
+            </p>
+        </footer>
+    </div>
+    <div id="modal-root" role="presentation"></div>
+    <script type="module" src="./scripts/main.js"></script>
+</body>
+</html>
