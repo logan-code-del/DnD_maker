@@ -38,7 +38,6 @@ export async function renderAncestryStep({ mount, session, compendium, updateSes
                     traits: race.traits ?? [],
                 },
             });
-            renderAncestryStep({ mount, session: { ...session, ancestry: { ...session.ancestry, race } }, compendium, updateSession, goToNext, goToPrevious });
         },
     });
 

@@ -1,7 +1,7 @@
 import { loadSession, saveSession, resetSession } from '../data/sessionStore.js';
 
 export function createStepManager({ mount, steps, compendium }) {
-    const session = loadSession();
+    let session = loadSession();
     let currentIndex = session.currentStepIndex ?? 0;
     const listeners = new Set();
 
@@ -21,6 +21,8 @@ export function createStepManager({ mount, steps, compendium }) {
             lastUpdated: Date.now(),
         };
         saveSession(nextSession);
+        session = loadSession(); 
+        renderCurrentStep();
     }
 
     async function renderCurrentStep() {
