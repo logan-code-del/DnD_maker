@@ -1,6 +1,8 @@
 import { createPanel } from '../components/panel.js';
+import { loadSession } from '../../data/sessionStore.js';
 
-export async function renderSummaryStep({ mount, session, goToPrevious, reset }) {
+export async function renderSummaryStep({ mount, goToPrevious, reset }) {
+    const session = loadSession();
     const panel = createPanel({
         title: 'Character Sheet',
         description: 'Preview your adventurer, export a shareable summary, or download printable JSON.',

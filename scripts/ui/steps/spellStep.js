@@ -1,10 +1,11 @@
 import { createPanel } from '../components/panel.js';
 import { createOptionList } from '../components/optionList.js';
 import { upsertCustomEntry } from '../../data/compendiumStore.js';
-
-const MAX_PREPARED = 12;
+import { getSpellLimits } from '../../data/spellLimits.js';
 
 export async function renderSpellStep({ mount, session, compendium, updateSession, goToNext, goToPrevious }) {
+    const spellLimits = await getSpellLimits(session.class.primaryClass, session.identity.level);
+
     const panel = createPanel({
         title: 'Spells & Magic',
         description: 'Browse the entire SRD spell list, prepare spell slots, and add custom magic.',
@@ -28,6 +29,7 @@ export async function renderSpellStep({ mount, session, compendium, updateSessio
         spellOptions,
         session,
         updateSession,
+        spellLimits,
     });
     const customSpellForm = createCustomSpellForm({ session, updateSession });
 
@@ -90,7 +92,7 @@ export async function renderSpellStep({ mount, session, compendium, updateSessio
         return wrapper;
     }
 
-    function createSpellLists({ spellOptions, session, updateSession }) {
+    function createSpellLists({ spellOptions, session, updateSession, spellLimits }) {
         const allSpellsColumn = createSpellListColumn({
             title: 'All Spells',
             spells: spellOptions,
@@ -99,7 +101,7 @@ export async function renderSpellStep({ mount, session, compendium, updateSessio
         });
 
         const preparedSpellsColumn = createSpellListColumn({
-            title: `Prepared Spells (${session.spells.prepared.length}/${MAX_PREPARED})`,
+            title: `Prepared Spells (${session.spells.prepared.length}/${spellLimits.prepared})`,
             spells: session.spells.prepared,
             onToggle: handleTogglePrepared,
             isSelected: () => true,
@@ -119,32 +121,25 @@ export async function renderSpellStep({ mount, session, compendium, updateSessio
                 spellbook: nextSpellbook,
             },
         });
-
-        renderSpellStep({ mount, session: { ...session, spells: { ...session.spells, spellbook: nextSpellbook } }, compendium, updateSession, goToNext, goToPrevious });
     }
 
     function handleTogglePrepared(spell) {
         const current = session.spells.prepared;
         const exists = current.some((s) => s.slug === spell.slug);
 
+        if (!exists && session.spells.prepared.length >= spellLimits.prepared) {
+            return;
+        }
+
         let nextPrepared = exists
             ? current.filter((s) => s.slug !== spell.slug)
-            : [...current, spell].slice(0, MAX_PREPARED);
+            : [...current, spell];
 
         updateSession({
             spells: {
                 ...session.spells,
                 prepared: nextPrepared,
             },
-        });
-
-        renderSpellStep({
-            mount,
-            session: { ...session, spells: { ...session.spells, prepared: nextPrepared } },
-            compendium,
-            updateSession,
-            goToNext,
-            goToPrevious,
         });
     }
 
@@ -176,7 +171,7 @@ export async function renderSpellStep({ mount, session, compendium, updateSessio
                 </label>
                 <label>
                     <span>Description</span>
-                    <textarea class="input-field" name="description" rows="3" placeholder="Describe the spell's effect" required></textarea>
+                    <textarea class="input-field" name="description" rows="3" placeholder="Describe the spell\'s effect" required></textarea>
                 </label>
             </form>
         `;
@@ -203,22 +198,6 @@ export async function renderSpellStep({ mount, session, compendium, updateSessio
                     spellbook: nextSpellbook,
                     customSpells: [...session.spells.customSpells, customSpell],
                 },
-            });
-
-            renderSpellStep({
-                mount,
-                session: {
-                    ...session,
-                    spells: {
-                        ...session.spells,
-                        spellbook: nextSpellbook,
-                        customSpells: [...session.spells.customSpells, customSpell],
-                    },
-                },
-                compendium,
-                updateSession,
-                goToNext,
-                goToPrevious,
             });
         });
 
