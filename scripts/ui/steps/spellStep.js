@@ -4,7 +4,7 @@ import { upsertCustomEntry } from '../../data/compendiumStore.js';
 import { getSpellLimits } from '../../data/spellLimits.js';
 
 export async function renderSpellStep({ mount, session, compendium, updateSession, goToNext, goToPrevious }) {
-    const spellLimits = await getSpellLimits(session.class.primaryClass, session.identity.level);
+        const spellLimits = await getSpellLimits(session.class?.primaryClass, session.identity.level);
 
     const panel = createPanel({
         title: 'Spells & Magic',

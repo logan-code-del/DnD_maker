@@ -71,7 +71,6 @@ function hydrateStepper(stepperElement, stepManager) {
 
         button.addEventListener('click', () => {
             stepManager.goToStep(step.id);
-            hydrateStepper(stepperElement, stepManager);
         });
 
         stepperElement.appendChild(button);

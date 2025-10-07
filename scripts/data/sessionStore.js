@@ -36,6 +36,30 @@ const defaultSession = {
     },
 };
 
+function deepMerge(target, source) {
+    const output = { ...target };
+
+    if (isObject(target) && isObject(source)) {
+        Object.keys(source).forEach(key => {
+            if (isObject(source[key])) {
+                if (!(key in target)) {
+                    Object.assign(output, { [key]: source[key] });
+                } else {
+                    output[key] = deepMerge(target[key], source[key]);
+                }
+            } else {
+                Object.assign(output, { [key]: source[key] });
+            }
+        });
+    }
+
+    return output;
+}
+
+function isObject(item) {
+    return (item && typeof item === 'object' && !Array.isArray(item));
+}
+
 export function loadSession() {
     try {
         const stored = localStorage.getItem(SESSION_KEY);
@@ -43,10 +67,10 @@ export function loadSession() {
             saveSession(defaultSession);
             return structuredClone(defaultSession);
         }
-        return {
-            ...structuredClone(defaultSession),
-            ...JSON.parse(stored),
-        };
+        
+        const storedSession = JSON.parse(stored);
+        return deepMerge(structuredClone(defaultSession), storedSession);
+
     } catch (error) {
         console.warn('Failed to load session, returning defaults', error);
         return structuredClone(defaultSession);
