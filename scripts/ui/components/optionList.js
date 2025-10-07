@@ -1,4 +1,4 @@
-export function createOptionList({ options, onSelect, getLabel, getSubtitle, getDescription, isSelected }) {
+export function createOptionList({ options, onSelect, getLabel, getSubtitle, getDescription, isSelected, onShowDetails }) {
     const grid = document.createElement('div');
     grid.className = 'option-grid';
 
@@ -33,6 +33,17 @@ export function createOptionList({ options, onSelect, getLabel, getSubtitle, get
                 card.appendChild(description);
             }
         }
+
+        const detailsButton = document.createElement('button');
+        detailsButton.className = 'ghost-button small-button';
+        detailsButton.textContent = 'Details';
+        detailsButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (onShowDetails) {
+                onShowDetails(option);
+            }
+        });
+        card.appendChild(detailsButton);
 
         card.addEventListener('click', () => onSelect(option));
         card.addEventListener('keydown', (event) => {

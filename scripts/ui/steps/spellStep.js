@@ -2,9 +2,10 @@ import { createPanel } from '../components/panel.js';
 import { createOptionList } from '../components/optionList.js';
 import { upsertCustomEntry } from '../../data/compendiumStore.js';
 import { getSpellLimits } from '../../data/spellLimits.js';
+import { showInSidebar } from '../components/sidebar.js';
 
 export async function renderSpellStep({ mount, session, compendium, updateSession, goToNext, goToPrevious }) {
-        const spellLimits = await getSpellLimits(session.class?.primaryClass, session.identity.level);
+    const spellLimits = await getSpellLimits(session.class?.primaryClass, session.identity.level);
 
     const panel = createPanel({
         title: 'Spells & Magic',
@@ -83,6 +84,9 @@ export async function renderSpellStep({ mount, session, compendium, updateSessio
                 spells: filteredSpells,
                 onToggle: handleToggleSpell,
                 isSelected: (spell) => session.spells.spellbook.some((s) => s.slug === spell.slug),
+                onShowDetails: (spell) => {
+                    showInSidebar(spell);
+                },
             }));
         }
 
@@ -98,6 +102,9 @@ export async function renderSpellStep({ mount, session, compendium, updateSessio
             spells: spellOptions,
             onToggle: handleToggleSpell,
             isSelected: (spell) => session.spells.spellbook.some((s) => s.slug === spell.slug),
+            onShowDetails: (spell) => {
+                showInSidebar(spell);
+            },
         });
 
         const preparedSpellsColumn = createSpellListColumn({
@@ -105,6 +112,9 @@ export async function renderSpellStep({ mount, session, compendium, updateSessio
             spells: session.spells.prepared,
             onToggle: handleTogglePrepared,
             isSelected: () => true,
+            onShowDetails: (spell) => {
+                showInSidebar(spell);
+            },
         });
 
         return [allSpellsColumn, preparedSpellsColumn];
@@ -204,7 +214,7 @@ export async function renderSpellStep({ mount, session, compendium, updateSessio
         return wrapper;
     }
 
-    function createSpellListColumn({ title, spells, onToggle, isSelected }) {
+    function createSpellListColumn({ title, spells, onToggle, isSelected, onShowDetails }) {
         const column = document.createElement('div');
         column.className = 'builder-panel';
         column.innerHTML = `
@@ -223,20 +233,14 @@ export async function renderSpellStep({ mount, session, compendium, updateSessio
             return column;
         }
 
-        const list = document.createElement('div');
-        list.className = 'option-grid';
-
-        spells.forEach((spell) => {
-            const card = document.createElement('article');
-            card.className = 'option-card';
-            card.dataset.selected = isSelected(spell);
-            card.innerHTML = `
-                <h3>${spell.name}</h3>
-                <p>${spell.school} • Level ${spell.level}</p>
-                <p>${spell.description}</p>
-            `;
-            card.addEventListener('click', () => onToggle(spell));
-            list.appendChild(card);
+        const list = createOptionList({
+            options: spells,
+            getLabel: (spell) => spell.name,
+            getSubtitle: (spell) => `${spell.school} • Level ${spell.level}`,
+            getDescription: (spell) => spell.description,
+            isSelected: isSelected,
+            onSelect: onToggle,
+            onShowDetails: onShowDetails,
         });
 
         column.appendChild(list);

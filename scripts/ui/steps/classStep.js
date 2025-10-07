@@ -1,6 +1,7 @@
 import { createPanel } from '../components/panel.js';
 import { createOptionList } from '../components/optionList.js';
 import { upsertCustomEntry } from '../../data/compendiumStore.js';
+import { showInSidebar } from '../components/sidebar.js';
 
 export async function renderClassStep({ mount, session, compendium, updateSession, goToNext, goToPrevious }) {
     const panel = createPanel({
@@ -37,7 +38,9 @@ export async function renderClassStep({ mount, session, compendium, updateSessio
                     subclass: null,
                 },
             });
-            renderClassStep({ mount, session: { ...session, class: { ...session.class, primaryClass: klass } }, compendium, updateSession, goToNext, goToPrevious });
+        },
+        onShowDetails: (klass) => {
+            showInSidebar(klass);
         },
     });
 
@@ -68,7 +71,9 @@ export async function renderClassStep({ mount, session, compendium, updateSessio
                         subclass: sc,
                     },
                 });
-                renderClassStep({ mount, session: { ...session, class: { ...session.class, subclass: sc } }, compendium, updateSession, goToNext, goToPrevious });
+            },
+            onShowDetails: (sc) => {
+                showInSidebar(sc);
             },
         });
         subclassSelector.appendChild(selector);

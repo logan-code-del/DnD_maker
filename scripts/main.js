@@ -1,5 +1,6 @@
 import { initializeBuilder } from './ui/initializeBuilder.js';
 import { fetchAndCacheCompendium } from './data/compendiumStore.js';
+import './ui/components/sidebar.js';
 
 const appElement = document.getElementById('app');
 const stepperElement = document.querySelector('.stepper');
